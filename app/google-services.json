@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "371888382456",
+    "project_id": "bank-xplore",
+    "storage_bucket": "bank-xplore.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:371888382456:android:d8b99216d3b3e54e18760d",
+        "android_client_info": {
+          "package_name": "com.example.bankx_plore"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBNNCkHEPn0vhgLPVbf5_2pXPrZqeFe0_A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
