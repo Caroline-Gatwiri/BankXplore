@@ -3,21 +3,34 @@ package com.example.bankx_plore.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import com.example.bankx_plore.datastore.DataStoreManager
 import kotlinx.coroutines.delay
 
 @Composable
-fun OnboardingNavigation(navigateToLogin: () -> Unit) {
-    // State to keep track of which screen is currently being displayed
+fun OnboardingNavigation(
+    navigateToLogin: () -> Unit,
+    dataStoreManager: DataStoreManager
+) {
     var currentScreen by remember { mutableIntStateOf(0) }
+//    //val isOnboardingCompleted by dataStoreManager.isOnboardingCompleted.collectAsState(initial = false)
+//
+//    // Check if onboarding is completed and navigate to login screen immediately
+//    if (isOnboardingCompleted) {
+//        LaunchedEffect(Unit) {
+//            navigateToLogin() // Navigate directly to the login screen
+//        }
+//        return // Skip rendering the onboarding flow if already completed
+//    }
 
-    // Automatically switch from the first screen after 3 seconds
+    // Handle the automatic screen transition for the first onboarding screen
     if (currentScreen == 0) {
         LaunchedEffect(Unit) {
-            delay(3000) // 3-second delay for the first screen (splash screen)
+            delay(3000) // 3 seconds delay for the first splash screen
             currentScreen = 1 // Move to the next screen
         }
     }
@@ -34,6 +47,7 @@ fun OnboardingNavigation(navigateToLogin: () -> Unit) {
         0 -> OnboardingScreen0() // First screen (Splash screen with logo)
         1 -> OnboardingScreen1(onNext = { currentScreen = 2 }) // Second screen
         2 -> OnboardingScreen2(onNext = { currentScreen = 3 }) // Third screen
-        3 -> OnboardingScreen3(onNext = { navigateToLogin() }) // Fourth screen navigates to Login
-    }
+        3 -> OnboardingScreen3(onNext = { navigateToLogin()})
+            }
 }
+

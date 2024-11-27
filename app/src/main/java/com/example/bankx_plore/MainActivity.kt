@@ -35,6 +35,7 @@ import com.example.bankx_plore.ui.LinkAccountScreen
 import com.example.bankx_plore.ui.LoginScreen
 import com.example.bankx_plore.ui.NavigationBar
 import com.example.bankx_plore.ui.NewUserDashboard
+import com.example.bankx_plore.ui.NotificationsScreen
 import com.example.bankx_plore.ui.OnboardingNavigation
 import com.example.bankx_plore.ui.PinCodeScreen
 import com.example.bankx_plore.ui.PinCreationScreen
@@ -58,7 +59,7 @@ class MainActivity : ComponentActivity() {
 
 
     private var linkAccountScreenOrigin: String =
-        "dashboard" // Tracks the origin of LinkAccountScreen
+        "dashboard"
     private var onPinCodeVerifiedCallback: ((String) -> Unit)? = null
 
 
@@ -80,7 +81,8 @@ class MainActivity : ComponentActivity() {
         )
 
         // Initialize the ViewModel using the factory
-        val viewModelFactory = MainViewModelFactory(documentRepository,accountRepository, dataStoreManager)
+        val viewModelFactory =
+            MainViewModelFactory(documentRepository, accountRepository, dataStoreManager)
         mainViewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
 
         enableEdgeToEdge()
@@ -135,8 +137,18 @@ class MainActivity : ComponentActivity() {
                 // Collect user state
                 val userState by dataStoreManager.userState.collectAsState(initial = UserState.EMPTY)
 
+//                LaunchedEffect(Unit) {
+//                    dataStoreManager.isOnboardingCompleted.collect { isCompleted ->
+//                        if (isCompleted) {
+//                            showOnboardingScreen = false
+//                            showLoginScreen = true
+//                        } else {
+//                            showOnboardingScreen = true
+//                        }
+//                    }
+//                }
                 // Handle document status updates
-                LaunchedEffect(userState,isUserLoggedIn) {
+                LaunchedEffect(userState, isUserLoggedIn) {
                     if (isUserLoggedIn) {
                         mainViewModel.fetchUploadStatus { status ->
                             mainViewModel.handleStatusChange(status)
@@ -179,10 +191,13 @@ class MainActivity : ComponentActivity() {
                 Surface {
                     when {
                         showOnboardingScreen -> {
-                            OnboardingNavigation {
-                                showOnboardingScreen = false
-                                showLoginScreen = true
-                            }
+                            OnboardingNavigation(
+                                navigateToLogin = {
+                                    showOnboardingScreen = false
+                                    showLoginScreen = true
+                                },
+                                dataStoreManager = dataStoreManager
+                            )
                         }
 
                         showLoginScreen -> {
@@ -323,12 +338,13 @@ class MainActivity : ComponentActivity() {
                                         }
                                     },
                                     onLogout = {
+                                        showLoginScreen = true
+
                                         performLogout(
                                             context = this,
                                             dataStoreManager = dataStoreManager
                                         ) {
-                                            // Reset all states
-                                            showLoginScreen = true
+
                                             showDashboardScreen = false
                                             isUserLoggedIn = false
                                             userToken = ""
@@ -392,6 +408,23 @@ class MainActivity : ComponentActivity() {
                                             showAccountsScreen = false
                                             showDashboardScreen = true
                                         }
+                                        1 -> {
+                                            showAccountsScreen = false
+                                            showLinkAccountScreen = true
+                                            linkAccountScreenOrigin = "accounts"
+                                        }
+                                        2 -> {
+                                            showAccountsScreen = false
+                                            showFundTransferScreen = true
+                                        }
+                                        3 -> {
+                                            showAccountsScreen = false
+                                            showTransactionHistoryScreen = true
+                                        }
+                                        4 -> {
+                                            showAccountsScreen = false
+                                            showNotificationsScreen = true
+                                        }
                                     }
                                 },
                                 navigateBackToDashboard = {
@@ -438,8 +471,28 @@ class MainActivity : ComponentActivity() {
                                             showTransactionHistoryScreen = false
                                             showDashboardScreen = true
                                         }
+                                        1 -> {
+                                            showTransactionHistoryScreen = false
+                                            showAccountsScreen = true
+                                        }
+                                        2 -> {
+                                            showTransactionHistoryScreen = false
+                                            showFundTransferScreen = true
+                                        }
+                                        3 -> {
+                                            showTransactionHistoryScreen = true
+                                            showNotificationsScreen = false
+                                        }
+                                        4 -> {
+                                            showTransactionHistoryScreen = false
+                                            showNotificationsScreen= true
+
+                                        }
+
                                     }
-                                }
+                                },
+                                apiService = RetrofitInstance.create(dataStoreManager),
+                                dataStoreManager = dataStoreManager
                             )
                         }
 
@@ -453,17 +506,28 @@ class MainActivity : ComponentActivity() {
                                             showFundTransferScreen = false
                                             showDashboardScreen = true
                                         }
+                                        1 -> {
+                                            showFundTransferScreen = false
+                                            showAccountsScreen = true
+                                        }
+                                        2 -> {
+                                            showFundTransferScreen =true
+                                            showDashboardScreen = false
+                                        }
+                                        3 ->{
+                                            showTransactionHistoryScreen = true
+                                            showNotificationsScreen = false
+                                        }
+                                        4 -> {
+                                            showTransactionHistoryScreen=true
+                                            showFundTransferScreen = false
+                                        }
                                     }
                                 },
                                 onBackClick = {
                                     showFundTransferScreen = false
                                     showDashboardScreen = true
                                 },
-//                                onSubmitTransaction = { transactionRequest -> // Ensure this matches the definition
-//                                    pendingTransactionRequest = transactionRequest
-//                                    showFundTransferScreen = false
-//                                    showPinCodeScreen = true
-//                                },
                                 accountRepository = accountRepository,
                                 navigateToPinCodeScreen = { request ->
                                     transactionRequest = request
@@ -475,17 +539,25 @@ class MainActivity : ComponentActivity() {
 
                         showPinCodeScreen -> {
                             PinCodeScreen(
-                                onBackClick = { showPinCodeScreen = false; showFundTransferScreen = true }, // Navigate back to FundTransferScreen
+                                onBackClick = {
+                                    showPinCodeScreen = false; showFundTransferScreen = true
+                                }, // Navigate back to FundTransferScreen
                                 onPinEntered = { pinCode, resultHandler ->
                                     transactionRequest?.let { req ->
                                         req.pin = pinCode
                                         mainViewModel.makeFundTransfer(
                                             req,
                                             onSuccess = { message ->
-                                                resultHandler(true, message) // Pass success to resultHandler
+                                                resultHandler(
+                                                    true,
+                                                    message
+                                                )
                                             },
                                             onFailure = { error ->
-                                                resultHandler(false, error) // Pass failure to resultHandler
+                                                resultHandler(
+                                                    false,
+                                                    error
+                                                )
                                             }
                                         )
                                     }
@@ -498,7 +570,7 @@ class MainActivity : ComponentActivity() {
                             PinCreationScreen(
                                 onPinCreated = { pin ->
                                     lifecycleScope.launch {
-                                        val userId =  dataStoreManager.getCurrentId()
+                                        val userId = dataStoreManager.getCurrentId()
                                         val token = dataStoreManager.getToken()
 
                                         if (userId != null && token != null) {
@@ -508,7 +580,10 @@ class MainActivity : ComponentActivity() {
                                                 token = token,
                                                 onSuccess = {
                                                     lifecycleScope.launch {
-                                                        dataStoreManager.saveUserPin(userId.toInt(), pin) // Save locally
+                                                        dataStoreManager.saveUserPin(
+                                                            userId.toInt(),
+                                                            pin
+                                                        ) // Save locally
                                                         pinRecentlyCreated = true // Set this flag
                                                         Toast.makeText(
                                                             this@MainActivity,
@@ -545,19 +620,54 @@ class MainActivity : ComponentActivity() {
                         }
 
 
+                        showNotificationsScreen -> {
+                            NotificationsScreen(
+                                selectedItem = selectedItem,
+                                onItemSelected = { newItem ->
+                                    selectedItem = newItem
+                                    when (newItem) {
+                                        0 -> {
+                                            showNotificationsScreen = false
+                                            showDashboardScreen = true
+                                        }
+
+                                        1 -> {
+                                            showNotificationsScreen = false
+                                            showAccountsScreen = true
+                                        }
+
+                                        2 -> {
+                                            showNotificationsScreen = false
+                                            showFundTransferScreen = true
+                                        }
+
+                                        3 -> {
+                                            showNotificationsScreen = false
+                                            showTransactionHistoryScreen = true
+
+                                        }
+                                    }
+
+                                },
+                                navigateBackToDashboard = {
+                                    showNotificationsScreen = false
+                                    showDashboardScreen = true
+                                }
+                            )
+                        }
+
+
+                        //1. bug check pin
+                        //2. user upload status
+                        //3. make FT include pin code
+                        //4. Loading status for sending txn request
+                        //5. Select destination bank identifier
+                        //6. Navigate depending on request status
+                        //7. Fetch TXN history
+                        //8. Create the transaction screen well.
+
 
                     }
-
-                    //1. bug check pin
-                    //2. user upload status
-                    //3. make FT include pin code
-                    //4. Loading status for sending txn request
-                    //5. Select destination bank identifier
-                    //6. Navigate depending on request status
-                    //7. Fetch TXN history
-                    //8. Create the transaction screen well.
-
-
                 }
             }
         }

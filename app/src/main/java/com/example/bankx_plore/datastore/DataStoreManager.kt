@@ -35,9 +35,10 @@ class DataStoreManager(private val context: Context) : TokenProvider {
         private val TOKEN_KEY = stringPreferencesKey("user_token")
         private val DOCUMENTS_UPLOADED_KEY = booleanPreferencesKey("documents_uploaded")
         private val USER_STATE_KEY = stringPreferencesKey("user_state")
-        private val PIN_KEY = stringPreferencesKey("user_pin")
+        //      private val PIN_KEY = stringPreferencesKey("user_pin")
         private val USER_ID_KEY = intPreferencesKey("user_id")
         private val USER_NAME_KEY = stringPreferencesKey("user_name")
+//        private val ONBOARDING_COMPLETED_KEY = booleanPreferencesKey("onboarding_completed")
     }
 
 
@@ -183,6 +184,17 @@ class DataStoreManager(private val context: Context) : TokenProvider {
             preferences.clear()
         }
     }
-
+//    // Save the flag indicating that onboarding is completed
+//    suspend fun setOnboardingCompleted(completed: Boolean) {
+//        context.dataStore.edit { preferences ->
+//            preferences[ONBOARDING_COMPLETED_KEY] = completed
+//        }
+//    }
+//
+//    // Retrieve the onboarding completed flag
+//    val isOnboardingCompleted: Flow<Boolean> = context.dataStore.data
+//        .map { preferences ->
+//            preferences[ONBOARDING_COMPLETED_KEY] ?: false
+//        }
 
 }

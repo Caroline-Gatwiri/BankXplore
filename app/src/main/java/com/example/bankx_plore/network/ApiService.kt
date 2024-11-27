@@ -80,6 +80,16 @@ interface ApiService {
         @Body pinRequest: PinRequest
     ): Call<Void>
 
+
+    @GET("/transactions/all-by-user")
+    fun getTransactionHistory(
+        @HeaderMap headers: Map<String, String>,
+        @Query("userId") userId: Int,
+        @Query("page") page: Int,
+        @Query("size") size: Int
+    ): Call<TransactionHistoryResponse>
+
+
 }
 
 

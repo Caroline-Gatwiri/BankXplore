@@ -126,7 +126,8 @@ fun NewUserDashboard(
                         navigateToPinCreation()
                     },
                     onError = { error ->
-                        Toast.makeText(context, "Error verifying PIN: $error", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Error verifying PIN: $error", Toast.LENGTH_SHORT)
+                            .show()
                     },
                     navigateToPinCreation = navigateToPinCreation,
                     showToast = { message ->
@@ -134,7 +135,8 @@ fun NewUserDashboard(
                     }
                 )
             } else {
-                Toast.makeText(context, "Session expired. Please log in again.", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Session expired. Please log in again.", Toast.LENGTH_SHORT)
+                    .show()
             }
         } else {
             // Reset the flag after a delay
@@ -153,19 +155,23 @@ fun NewUserDashboard(
                 showAwaitVerificationDialog = false
                 Log.d("NewUserDashboard", "User is DEACTIVATED, showing upload dialog.")
             }
+
             UserState.UNVERIFIED -> {
                 showAwaitVerificationDialog = true
                 showUploadDialog = false
                 Log.d("NewUserDashboard", "User is UNVERIFIED, awaiting verification.")
             }
+
             UserState.ACTIVATED -> {
                 showUploadDialog = false
                 showAwaitVerificationDialog = false
                 Log.d("NewUserDashboard", "User is ACTIVATED, full access granted.")
             }
+
             UserState.ARCHIVED -> {
                 Log.d("NewUserDashboard", "User state is ARCHIVED, no access.")
             }
+
             else -> {}
         }
     }
@@ -227,193 +233,194 @@ fun NewUserDashboard(
             )
         }
     ) { paddingValues ->
-            Box(
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+        ) {
+            Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
+                    .padding(16.dp)
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
+                // Welcome message
+                Text(
+                    text = "Hello, $userName",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
+                // Search bar and menu
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Welcome message
-                    Text(
-                        text = "Hello, $userName",
-                        fontSize = 20.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 16.dp)
+                    OutlinedTextField(
+                        value = searchQuery,
+                        onValueChange = { searchQuery = it },
+                        label = { Text("Search Accounts") },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Search Icon"
+                            )
+                        },
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(vertical = 8.dp),
+                        singleLine = true,
+                        shape = RoundedCornerShape(16.dp)
                     )
 
-                    // Search bar and menu
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        OutlinedTextField(
-                            value = searchQuery,
-                            onValueChange = { searchQuery = it },
-                            label = { Text("Search Accounts") },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Search,
-                                    contentDescription = "Search Icon"
-                                )
-                            },
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(vertical = 8.dp),
-                            singleLine = true,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-
-                        Box {
-                            IconButton(onClick = { showMenu = !showMenu }) {
-                                Icon(
-                                    imageVector = Icons.Default.MoreVert,
-                                    contentDescription = "More options"
-                                )
-                            }
-                            DropdownMenu(
-                                expanded = showMenu,
-                                onDismissRequest = { showMenu = false }
-                            ) {
-                                DropdownMenuItem(
-                                    text = { Text("Notifications") },
-                                    onClick = { showMenu = false }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("Settings") },
-                                    onClick = { showMenu = false }
-                                )
-                                DropdownMenuItem(
-                                    text = { Text("Logout") },
-                                    onClick = {
-                                        showMenu = false
-                                        showLogoutDialog = true
-                                    }
-                                )
-                            }
+                    Box {
+                        IconButton(onClick = { showMenu = !showMenu }) {
+                            Icon(
+                                imageVector = Icons.Default.MoreVert,
+                                contentDescription = "More options"
+                            )
                         }
-                        if (showLogoutDialog) {
-                            LogoutConfirmationDialog(
-                                onConfirm = {
-                                    showLogoutDialog = false
-                                    performLogout(
-                                        context = context,
-                                        dataStoreManager = dataStoreManager
-                                    ) {
-                                        showLoginScreen = true
-                                    }
-                                },
-                                onDismiss = { showLogoutDialog = false }
+                        DropdownMenu(
+                            expanded = showMenu,
+                            onDismissRequest = { showMenu = false }
+                        ) {
+                            DropdownMenuItem(
+                                text = { Text("Notifications") },
+                                onClick = { showMenu = false }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Settings") },
+                                onClick = { showMenu = false }
+                            )
+                            DropdownMenuItem(
+                                text = { Text("Logout") },
+                                onClick = {
+                                    showMenu = false
+                                    showLogoutDialog = true
+                                }
                             )
                         }
                     }
-
-                    Spacer(modifier = Modifier.height(16.dp))
-
-                    // Account Cards Section
-
-                    Text(
-                        text = "Your Accounts",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(bottom = 8.dp)
-                    )
-
-                    if (isLoading) {
-                        Text(
-                            text = "Loading accounts...",
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center
+                    if (showLogoutDialog) {
+                        LogoutConfirmationDialog(
+                            onConfirm = {
+                                onLogout()
+                                showLogoutDialog = false
+                                performLogout(
+                                    context = context,
+                                    dataStoreManager = dataStoreManager
+                                ) {
+                                    showLoginScreen = true
+                                }
+                            },
+                            onDismiss = { showLogoutDialog = false }
                         )
-                    } else if (errorMessage != null) {
-                        Text(
-                            text = "Error fetching accounts. Please try again later.",
-                            color = Color.Red,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    } else if (accounts.isEmpty()) {
-                        Text(
-                            text = "No accounts found. Please link your accounts.",
-                            color = Color.Gray,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    } else {
-                        LazyRow(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            items(accounts.size) { index ->
-                                AccountCard(account = accounts[index])
-                            }
-                        }
                     }
+                }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(16.dp))
 
-                    // Link Accounts button
-                    Button(
-                        onClick = { handleNavigation { navigateToLinkAccount() } },
-                        shape = RoundedCornerShape(24.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color(0xFF052A71),
-                            contentColor = Color.White
-                        )
-                    ) {
-                        Text("Link Accounts")
-                    }
+                // Account Cards Section
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Your Accounts",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
 
-                    // Explore Bank Services section
+                if (isLoading) {
                     Text(
-                        text = "Explore Bank Services",
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        text = "Loading accounts...",
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.Center
                     )
-
-                    // Services Cards Row
+                } else if (errorMessage != null) {
+                    Text(
+                        text = "Error fetching accounts. Please try again later.",
+                        color = Color.Red,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                } else if (accounts.isEmpty()) {
+                    Text(
+                        text = "No accounts found. Please link your accounts.",
+                        color = Color.Gray,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                } else {
                     LazyRow(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
-                        items(bankServicesList.size) { index ->
-                            BankServiceCard(bankService = bankServicesList[index])
+                        items(accounts.size) { index ->
+                            AccountCard(account = accounts[index])
                         }
                     }
                 }
 
-                // Show Upload Documents Dialog
-                if (showUploadDialog && userState == UserState.DEACTIVATED && !documentsUploaded) {
-                    UploadDocumentsDialog(
-                        onDismiss = { showUploadDialog = false },
-                        onUpload = {
-                            showUploadDialog = false
-                            navigateToDocumentUpload()
-                        }
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Link Accounts button
+                Button(
+                    onClick = { handleNavigation { navigateToLinkAccount() } },
+                    shape = RoundedCornerShape(24.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(50.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF052A71),
+                        contentColor = Color.White
                     )
+                ) {
+                    Text("Link Accounts")
                 }
 
-                // Show Await Verification Dialog
-                if (showAwaitVerificationDialog && userState == UserState.UNVERIFIED) {
-                    AwaitVerificationDialog(
-                        onDismiss = { showAwaitVerificationDialog = false },
-                        onVerificationComplete = {
-                            // Set the state to trigger the PIN verification
-                            shouldCheckPin = true
-                        }
-                    )
+                Spacer(modifier = Modifier.height(16.dp))
+
+
+                Text(
+                    text = "Explore Bank Services",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+
+
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    items(bankServicesList.size) { index ->
+                        BankServiceCard(bankService = bankServicesList[index])
+                    }
                 }
             }
+
+
+            if (showUploadDialog && userState == UserState.DEACTIVATED && !documentsUploaded) {
+                UploadDocumentsDialog(
+                    onDismiss = { showUploadDialog = false },
+                    onUpload = {
+                        showUploadDialog = false
+                        navigateToDocumentUpload()
+                    }
+                )
+            }
+
+            // Show Await Verification Dialog
+            if (showAwaitVerificationDialog && userState == UserState.UNVERIFIED) {
+                AwaitVerificationDialog(
+                    onDismiss = { showAwaitVerificationDialog = false },
+                    onVerificationComplete = {
+                        // Set the state to trigger the PIN verification
+                        shouldCheckPin = true
+                    }
+                )
+            }
+        }
 
     }
 }
@@ -484,8 +491,8 @@ fun performLogout(
     dataStoreManager: DataStoreManager,
     onNavigateToLogin: () -> Unit
 ) {
-    // Use a standard coroutine scope
-    val coroutineScope = CoroutineScope(Dispatchers.IO) // Use IO dispatcher for background work
+
+    val coroutineScope = CoroutineScope(Dispatchers.IO)
     coroutineScope.launch {
         dataStoreManager.clearUserToken()
         dataStoreManager.clearCurrentUserId()
@@ -589,7 +596,6 @@ fun NavigationBar(selectedItem: Int, onItemSelected: (Int) -> Unit) {
         )
     }
 }
-
 
 
 //@Preview(showBackground = true)
