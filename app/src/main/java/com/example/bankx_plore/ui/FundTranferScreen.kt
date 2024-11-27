@@ -227,7 +227,7 @@ fun FundTransferScreen(
                         selectedToAccount.isNotEmpty() &&
                         transferAmount.toDoubleOrNull() != null
                     ) {
-
+                        val bankCode = getBankCodeFromBankName(selectedBank)
                             val transactionType = determineTransactionType(transferAmount.toDouble())
                             val transactionRequest = TransactionRequest(
                                 pin = pin,
@@ -240,8 +240,8 @@ fun FundTransferScreen(
                                     senderBankCode = getBankCode(selectedFromAccount, accounts),
                                     receiverAccountNumber = selectedToAccount,
                                     receiverPhoneNo = "0987654321",
-//                                    receiverBankCode = getBankCode(selectedToAccount, accounts),
-                                    receiverBankCode = selectedBank,
+                                    //receiverBankCode = getBankCode( selectedBank, accounts),
+                                   receiverBankCode = bankCode,
                                     amount = transferAmount.toDouble(),
                                     currency = "KES",
                                     transactionFee = transactionFee,
@@ -303,6 +303,16 @@ fun getBankCode(accountNumber: String, accounts: List<Account>): String {
         3 -> "ABSA"
         else -> throw IllegalArgumentException("Unsupported bank code: $bankId")
     }
+}
+fun getBankCodeFromBankName(bankName: String): String {
+    val bankCodes = mapOf(
+        "KCB" to "KCB",
+        "FAMILY" to "Family",
+        "ABSA BANK" to "ABSA"
+        // Add more bank names and codes as needed
+    )
+    return bankCodes[bankName]
+        ?: throw IllegalArgumentException("Invalid bank code for bank name: $bankName")
 }
 
 fun handleTransaction(

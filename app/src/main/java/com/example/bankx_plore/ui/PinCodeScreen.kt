@@ -144,7 +144,9 @@ fun PinCodeScreen(
                 FailureDialog(
                     message = transactionMessage,
                     onDismiss = { showFailureDialog = false },
-                    onRetry = { /* Handle retry logic */ }
+                    onRetry = {
+                        onBackClick()
+                    }
                 )
             }
         }

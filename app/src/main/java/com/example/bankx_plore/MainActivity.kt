@@ -37,7 +37,6 @@ import com.example.bankx_plore.ui.NavigationBar
 import com.example.bankx_plore.ui.NewUserDashboard
 import com.example.bankx_plore.ui.OnboardingNavigation
 import com.example.bankx_plore.ui.PinCodeScreen
-import com.example.bankx_plore.ui.PinCodeScreenPreview
 import com.example.bankx_plore.ui.PinCreationScreen
 import com.example.bankx_plore.ui.SignUpScreen
 import com.example.bankx_plore.ui.TransactionHistoryScreen
@@ -475,14 +474,23 @@ class MainActivity : ComponentActivity() {
                         }
 
                         showPinCodeScreen -> {
-                           PinCodeScreen({},{ pin ->
-                               transactionRequest?.let { req ->
-                                   req.pin = pin
-                                   mainViewModel.makeFundTransfer(req, { showDashboardScreen = true }, {
-                                       showDashboardScreen = true
-                                   })
-                               }
-                           })
+                            PinCodeScreen(
+                                onBackClick = { showPinCodeScreen = false; showFundTransferScreen = true }, // Navigate back to FundTransferScreen
+                                onPinEntered = { pinCode, resultHandler ->
+                                    transactionRequest?.let { req ->
+                                        req.pin = pinCode
+                                        mainViewModel.makeFundTransfer(
+                                            req,
+                                            onSuccess = { message ->
+                                                resultHandler(true, message) // Pass success to resultHandler
+                                            },
+                                            onFailure = { error ->
+                                                resultHandler(false, error) // Pass failure to resultHandler
+                                            }
+                                        )
+                                    }
+                                }
+                            )
                         }
 
 
@@ -547,6 +555,7 @@ class MainActivity : ComponentActivity() {
                     //5. Select destination bank identifier
                     //6. Navigate depending on request status
                     //7. Fetch TXN history
+                    //8. Create the transaction screen well.
 
 
                 }
