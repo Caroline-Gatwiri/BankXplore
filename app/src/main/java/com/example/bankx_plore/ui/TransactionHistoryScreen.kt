@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -75,7 +75,7 @@ fun TransactionHistoryScreen(
                 ) {
                     IconButton(onClick = { onBackClick() }) {
                         Icon(
-                            imageVector = Icons.Filled.ArrowBack, // Replaced the deprecated icon
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack, // Replaced the deprecated icon
                             contentDescription = "Back",
                             modifier = Modifier.size(28.dp)
                         )

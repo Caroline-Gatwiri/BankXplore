@@ -14,7 +14,7 @@ class MainViewModelFactory(
 
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
-            return MainViewModel(documentRepository,accountRepository, dataStoreManager) as T
+            return MainViewModel(documentRepository, accountRepository, dataStoreManager) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

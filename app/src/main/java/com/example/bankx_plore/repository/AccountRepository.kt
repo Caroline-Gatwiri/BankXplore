@@ -106,7 +106,8 @@ class AccountRepository(private val apiService: ApiService) {
         onSuccess: (Double) -> Unit,
         onFailure: (String) -> Unit
     ) {
-        val route = "/banking/${getBankRoute(bankCode)}/transactions/balance?accountNumber=$accountNumber&bankCode=$bankCode"
+        val route =
+            "/banking/${getBankRoute(bankCode)}/transactions/balance?accountNumber=$accountNumber&bankCode=$bankCode"
         Log.d("getAccountBalance", "Fetching balance with route: $route") // Log the URL
 
         apiService.getAccountBalance(route).enqueue(object : Callback<BalanceResponse> {
@@ -167,27 +168,29 @@ class AccountRepository(private val apiService: ApiService) {
     ) {
         val headers = mapOf("Authorization" to "Bearer $token") // Authorization header
 
-        RetrofitInstance.api.initiateTransaction(headers,transactionRequest).enqueue(object : retrofit2.Callback<TransactionResponse> {
-            override fun onResponse(call: Call<TransactionResponse>, response: Response<TransactionResponse>) {
-                if (response.isSuccessful) {
-                    val transactionResponse = response.body()
-                    if (transactionResponse != null) {
-                        onSuccess(transactionResponse)
+        RetrofitInstance.api.initiateTransaction(headers, transactionRequest)
+            .enqueue(object : retrofit2.Callback<TransactionResponse> {
+                override fun onResponse(
+                    call: Call<TransactionResponse>,
+                    response: Response<TransactionResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        val transactionResponse = response.body()
+                        if (transactionResponse != null) {
+                            onSuccess(transactionResponse)
+                        } else {
+                            onFailure("Transaction response is null.")
+                        }
                     } else {
-                        onFailure("Transaction response is null.")
+                        onFailure("Transaction failed with status code: ${response.code()}")
                     }
-                } else {
-                    onFailure("Transaction failed with status code: ${response.code()}")
                 }
-            }
 
-            override fun onFailure(call: Call<TransactionResponse>, t: Throwable) {
-                onFailure("Network error: ${t.message}")
-            }
-        })
+                override fun onFailure(call: Call<TransactionResponse>, t: Throwable) {
+                    onFailure("Network error: ${t.message}")
+                }
+            })
     }
-
-
 
 
     private fun getBankName(bankId: Int): String {
@@ -276,7 +279,6 @@ class AccountRepository(private val apiService: ApiService) {
     }
 
 
-
     fun savePinToBackend(
         userId: Int,
         pin: String,
@@ -301,8 +303,6 @@ class AccountRepository(private val apiService: ApiService) {
             }
         })
     }
-
-
 
 
 }

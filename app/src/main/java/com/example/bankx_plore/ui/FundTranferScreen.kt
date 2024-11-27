@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeGesturesPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -88,7 +87,12 @@ fun FundTransferScreen(
 
             accountRepository?.getLinkedAccounts(
                 onSuccess = { fetchedAccounts -> accounts = fetchedAccounts },
-                onFailure = { error -> Log.e("FundTransferScreen", "Failed to fetch accounts: $error") }
+                onFailure = { error ->
+                    Log.e(
+                        "FundTransferScreen",
+                        "Failed to fetch accounts: $error"
+                    )
+                }
             )
 
             val savedPin = dataStoreManager.getUserPin(userId).firstOrNull()
@@ -161,9 +165,9 @@ fun FundTransferScreen(
             }
             DropdownInput(
                 label = "Select Account",
-                options = accounts.map{it.bankName},
+                options = accounts.map { it.bankName },
                 selectedOption = selectedBank,
-                onOptionSelected = {selectedBank = it}
+                onOptionSelected = { selectedBank = it }
             )
             Spacer(modifier = Modifier.height(16.dp))
             // To Account Input
@@ -215,7 +219,11 @@ fun FundTransferScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Total Deduction", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                Text("KES ${"%.2f".format(totalDeduction)}", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text(
+                    "KES ${"%.2f".format(totalDeduction)}",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -228,33 +236,37 @@ fun FundTransferScreen(
                         transferAmount.toDoubleOrNull() != null
                     ) {
                         val bankCode = getBankCodeFromBankName(selectedBank)
-                            val transactionType = determineTransactionType(transferAmount.toDouble())
-                            val transactionRequest = TransactionRequest(
-                                pin = pin,
-                                transactionDetails = TransactionDetails(
-                                    userId = userId,
-                                    transactionId = "TX${System.currentTimeMillis()}",
-                                    transactionType = transactionType,
-                                    senderPhoneNo = "1234567890",
-                                    senderAccountNumber = selectedFromAccount,
-                                    senderBankCode = getBankCode(selectedFromAccount, accounts),
-                                    receiverAccountNumber = selectedToAccount,
-                                    receiverPhoneNo = "0987654321",
-                                    //receiverBankCode = getBankCode( selectedBank, accounts),
-                                   receiverBankCode = bankCode,
-                                    amount = transferAmount.toDouble(),
-                                    currency = "KES",
-                                    transactionFee = transactionFee,
-                                    referenceNote = transactionNote
-                                )
+                        val transactionType = determineTransactionType(transferAmount.toDouble())
+                        val transactionRequest = TransactionRequest(
+                            pin = pin,
+                            transactionDetails = TransactionDetails(
+                                userId = userId,
+                                transactionId = "TX${System.currentTimeMillis()}",
+                                transactionType = transactionType,
+                                senderPhoneNo = "1234567890",
+                                senderAccountNumber = selectedFromAccount,
+                                senderBankCode = getBankCode(selectedFromAccount, accounts),
+                                receiverAccountNumber = selectedToAccount,
+                                receiverPhoneNo = "0987654321",
+                                //receiverBankCode = getBankCode( selectedBank, accounts),
+                                receiverBankCode = bankCode,
+                                amount = transferAmount.toDouble(),
+                                currency = "KES",
+                                transactionFee = transactionFee,
+                                referenceNote = transactionNote
                             )
-                            // Initiate the transaction
+                        )
+                        // Initiate the transaction
 //                            handleTransaction(context, transactionRequest, accountRepository!!)
 
                         navigateToPinCodeScreen(transactionRequest)
 
                     } else {
-                        Toast.makeText(context, "Please fill all required fields.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Please fill all required fields.",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -265,14 +277,6 @@ fun FundTransferScreen(
         }
     }
 }
-
-
-
-
-
-
-
-
 
 
 fun determineTransactionType(amount: Double?): String {
@@ -304,6 +308,7 @@ fun getBankCode(accountNumber: String, accounts: List<Account>): String {
         else -> throw IllegalArgumentException("Unsupported bank code: $bankId")
     }
 }
+
 fun getBankCodeFromBankName(bankName: String): String {
     val bankCodes = mapOf(
         "KCB" to "KCB",
@@ -333,8 +338,6 @@ fun handleTransaction(
         }
     )
 }
-
-
 
 
 @Composable

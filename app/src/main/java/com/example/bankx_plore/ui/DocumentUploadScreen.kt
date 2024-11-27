@@ -146,17 +146,26 @@ fun DocumentUploadScreen(
                                 onSuccess = {
                                     isLoading = false
                                     onDocumentsUploaded(true)
-                                    Toast.makeText(context, "Upload successful", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, "Upload successful", Toast.LENGTH_SHORT)
+                                        .show()
                                     navigateBackToDashboard()
                                 },
                                 onFailure = { errorMessage ->
                                     isLoading = false
-                                    Toast.makeText(context, "Upload failed: $errorMessage", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "Upload failed: $errorMessage",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             )
                         }
                     } else {
-                        Toast.makeText(context, "Please select both ID and KRA documents", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Please select both ID and KRA documents",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 },
                 modifier = Modifier
@@ -165,7 +174,8 @@ fun DocumentUploadScreen(
                 shape = RoundedCornerShape(24.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color(0xFF052A71),
-                    contentColor = Color.White)
+                    contentColor = Color.White
+                )
             )
             {
                 if (isLoading) {

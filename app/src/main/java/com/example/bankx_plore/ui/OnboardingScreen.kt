@@ -28,7 +28,6 @@ import com.example.bankx_plore.R
 @OptIn(ExperimentalFoundationApi::class)
 
 
-
 @Composable
 fun OnboardingScreen0() {
     Surface(
@@ -109,6 +108,7 @@ fun OnboardingScreen1(onNext: () -> Unit) {
         }
     }
 }
+
 @Composable
 fun OnboardingScreen2(onNext: () -> Unit) {
     Surface(
@@ -165,6 +165,7 @@ fun OnboardingScreen2(onNext: () -> Unit) {
         }
     }
 }
+
 @Composable
 fun OnboardingScreen3(onNext: () -> Unit) {
     Surface(
@@ -224,12 +225,10 @@ fun OnboardingScreen3(onNext: () -> Unit) {
 }
 
 
-
-
 // Add this function to preview your composable
 @Preview(showBackground = true)
 @Composable
 fun PreviewOnboardingScreen3() {
-    OnboardingScreen3 (onNext = {}) // Calling the original composable here
+    OnboardingScreen3(onNext = {}) // Calling the original composable here
 }
 

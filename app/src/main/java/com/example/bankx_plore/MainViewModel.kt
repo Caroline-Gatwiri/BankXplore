@@ -1,7 +1,6 @@
 package com.example.bankx_plore
 
 import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -50,7 +49,7 @@ class MainViewModel(
             token,
             transactionRequest,
             onSuccess = { response ->
-                val message = response.message ?: "No message available"
+                val message = response.message
                 Log.e("--------", message)
                 onSuccess(message)
             },
@@ -82,5 +81,4 @@ class MainViewModel(
             }
         }
     }
-
 }

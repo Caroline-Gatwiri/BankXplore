@@ -80,7 +80,8 @@ class MainActivity : ComponentActivity() {
         )
 
         // Initialize the ViewModel using the factory
-        val viewModelFactory = MainViewModelFactory(documentRepository,accountRepository, dataStoreManager)
+        val viewModelFactory =
+            MainViewModelFactory(documentRepository, accountRepository, dataStoreManager)
         mainViewModel = ViewModelProvider(this, viewModelFactory).get(MainViewModel::class.java)
 
         enableEdgeToEdge()
@@ -136,7 +137,7 @@ class MainActivity : ComponentActivity() {
                 val userState by dataStoreManager.userState.collectAsState(initial = UserState.EMPTY)
 
                 // Handle document status updates
-                LaunchedEffect(userState,isUserLoggedIn) {
+                LaunchedEffect(userState, isUserLoggedIn) {
                     if (isUserLoggedIn) {
                         mainViewModel.fetchUploadStatus { status ->
                             mainViewModel.handleStatusChange(status)
@@ -475,17 +476,25 @@ class MainActivity : ComponentActivity() {
 
                         showPinCodeScreen -> {
                             PinCodeScreen(
-                                onBackClick = { showPinCodeScreen = false; showFundTransferScreen = true }, // Navigate back to FundTransferScreen
+                                onBackClick = {
+                                    showPinCodeScreen = false; showFundTransferScreen = true
+                                }, // Navigate back to FundTransferScreen
                                 onPinEntered = { pinCode, resultHandler ->
                                     transactionRequest?.let { req ->
                                         req.pin = pinCode
                                         mainViewModel.makeFundTransfer(
                                             req,
                                             onSuccess = { message ->
-                                                resultHandler(true, message) // Pass success to resultHandler
+                                                resultHandler(
+                                                    true,
+                                                    message
+                                                ) // Pass success to resultHandler
                                             },
                                             onFailure = { error ->
-                                                resultHandler(false, error) // Pass failure to resultHandler
+                                                resultHandler(
+                                                    false,
+                                                    error
+                                                ) // Pass failure to resultHandler
                                             }
                                         )
                                     }
@@ -498,7 +507,7 @@ class MainActivity : ComponentActivity() {
                             PinCreationScreen(
                                 onPinCreated = { pin ->
                                     lifecycleScope.launch {
-                                        val userId =  dataStoreManager.getCurrentId()
+                                        val userId = dataStoreManager.getCurrentId()
                                         val token = dataStoreManager.getToken()
 
                                         if (userId != null && token != null) {
@@ -508,7 +517,10 @@ class MainActivity : ComponentActivity() {
                                                 token = token,
                                                 onSuccess = {
                                                     lifecycleScope.launch {
-                                                        dataStoreManager.saveUserPin(userId.toInt(), pin) // Save locally
+                                                        dataStoreManager.saveUserPin(
+                                                            userId.toInt(),
+                                                            pin
+                                                        ) // Save locally
                                                         pinRecentlyCreated = true // Set this flag
                                                         Toast.makeText(
                                                             this@MainActivity,
@@ -545,7 +557,6 @@ class MainActivity : ComponentActivity() {
                         }
 
 
-
                     }
 
                     //1. bug check pin
@@ -565,21 +576,23 @@ class MainActivity : ComponentActivity() {
 }
 
 
-//private fun showSuccessDialog(message: String) {
-//    AlertDialog.Builder(this)
-//        .setTitle("Success")
-//        .setMessage(message)
-//        .setPositiveButton("OK") { dialog, _ ->
-//            dialog.dismiss()
-//        }
-//        .show()
-//}
-//private fun showErrorDialog(message: String) {
-//    AlertDialog.Builder(this)
-//        .setTitle("Error")
-//        .setMessage(message)
-//        .setPositiveButton("OK") { dialog, _ ->
-//            dialog.dismiss()
-//        }
-//        .show()
-//}
+/*
+private fun showSuccessDialog(message: String) {
+    AlertDialog.Builder(this)
+        .setTitle("Success")
+        .setMessage(message)
+        .setPositiveButton("OK") { dialog, _ ->
+            dialog.dismiss()
+        }
+        .show()
+}
+private fun showErrorDialog(message: String) {
+    AlertDialog.Builder(this)
+        .setTitle("Error")
+        .setMessage(message)
+        .setPositiveButton("OK") { dialog, _ ->
+            dialog.dismiss()
+        }
+        .show()
+}
+*/

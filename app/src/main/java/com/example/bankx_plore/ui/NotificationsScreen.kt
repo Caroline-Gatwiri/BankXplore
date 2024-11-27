@@ -13,7 +13,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
@@ -70,7 +70,7 @@ fun NotificationsScreen(
             ) {
                 IconButton(onClick = { navigateBackToDashboard() }) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back to Dashboard"
                     )
                 }
@@ -120,13 +120,29 @@ fun NotificationCard(notification: NotificationData) {
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.Start
         ) {
-            Text(text = "Receive Money", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+            Text(
+                text = "Receive Money",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = notification.amount, style = MaterialTheme.typography.titleLarge, color = Color(0xFF04A45A))
+            Text(
+                text = notification.amount,
+                style = MaterialTheme.typography.titleLarge,
+                color = Color(0xFF04A45A)
+            )
             Text(text = "from ${notification.sender}", style = MaterialTheme.typography.bodyMedium)
-            Text(text = "Message: ${notification.message}", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+            Text(
+                text = "Message: ${notification.message}",
+                style = MaterialTheme.typography.bodySmall,
+                color = Color.Gray
+            )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(text = notification.date, style = MaterialTheme.typography.labelSmall, color = Color.Gray)
+            Text(
+                text = notification.date,
+                style = MaterialTheme.typography.labelSmall,
+                color = Color.Gray
+            )
         }
     }
 }

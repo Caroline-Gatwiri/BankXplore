@@ -18,7 +18,7 @@ data class LinkedAccount(
 data class Account(
     val bankName: String,
     val accountNumber: String,
-    val bankCode : Int,
+    val bankCode: Int,
     val totalFunds: String = "KES 0.00",
     val bankLogo: Int,
     val cardColor: Color

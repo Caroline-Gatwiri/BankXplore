@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -59,7 +59,7 @@ fun ConfirmDetailsScreen(
             ) {
                 IconButton(onClick = { onBackClick() }) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back",
                         modifier = Modifier.size(24.dp)
                     )
@@ -77,7 +77,11 @@ fun ConfirmDetailsScreen(
             // From Account Section
             Text(text = "From Account", fontSize = 16.sp)
             Text(text = fromAccount, fontSize = 18.sp)
-            Text(text = "Savings", fontSize = 14.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f))
+            Text(
+                text = "Savings",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 
@@ -98,7 +102,11 @@ fun ConfirmDetailsScreen(
             // To Account Section
             Text(text = "To Account", fontSize = 16.sp)
             Text(text = toAccount, fontSize = 18.sp)
-            Text(text = "Checking", fontSize = 14.sp, color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f))
+            Text(
+                text = "Checking",
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+            )
 
             Spacer(modifier = Modifier.height(8.dp))
 

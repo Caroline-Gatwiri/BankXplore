@@ -38,5 +38,4 @@ class AuthInterceptor(private val tokenProvider: TokenProvider) : Interceptor {
         }
         return true
     }
-
 }

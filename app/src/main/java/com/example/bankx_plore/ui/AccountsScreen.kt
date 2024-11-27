@@ -225,18 +225,3 @@ fun AccountCard(account: Account) {
         }
     }
 }
-
-
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewAccountsScreen() {
-    // Previewing the AccountsScreen with mock back navigation
-    AccountsScreen(
-        accountRepository = AccountRepository(apiService = TODO()),
-        selectedItem = 1,
-        onItemSelected = {},
-        navigateBackToDashboard = {},
-        navigateToLinkAccount = TODO()
-    )
-}

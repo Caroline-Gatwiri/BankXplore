@@ -83,7 +83,11 @@ fun LinkAccountScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 IconButton(onClick = { onBackPress(origin) }) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = Color.Black)
+                    Icon(
+                        Icons.AutoMirrored.Filled.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.Black
+                    )
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
@@ -177,7 +181,13 @@ fun LinkAccountScreen(
                 isDialogVisible = false
                 if (!isError) navigateToDashboard() // Navigate back on success
             },
-            title = { Text(if (isError) "NOT SUCCESSFUL" else "SUCCESSFUL", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
+            title = {
+                Text(
+                    if (isError) "NOT SUCCESSFUL" else "SUCCESSFUL",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 20.sp
+                )
+            },
             text = { Text(dialogMessage, fontSize = 16.sp) },
             confirmButton = {
                 Button(onClick = {

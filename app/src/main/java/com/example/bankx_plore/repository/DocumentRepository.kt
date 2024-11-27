@@ -48,28 +48,35 @@ class DocumentRepository(
         val idFilePart = createMultipartFromUri(idFileUri, "id")
         val kraFilePart = createMultipartFromUri(kraFileUri, "kra")
 
-        apiService.uploadDocuments(idFilePart, kraFilePart).enqueue(object : Callback<ResponseBody> {
-            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                if (response.isSuccessful) {
-                    coroutineScope.launch {
-                        dataStoreManager.saveDocumentsUploaded(true)
-                        dataStoreManager.saveUserState(UserState.UNVERIFIED)
-                        Log.d("DocumentRepository", "Documents uploaded successfully, initial state set to UNVERIFIED.")
+        apiService.uploadDocuments(idFilePart, kraFilePart)
+            .enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(
+                    call: Call<ResponseBody>,
+                    response: Response<ResponseBody>
+                ) {
+                    if (response.isSuccessful) {
+                        coroutineScope.launch {
+                            dataStoreManager.saveDocumentsUploaded(true)
+                            dataStoreManager.saveUserState(UserState.UNVERIFIED)
+                            Log.d(
+                                "DocumentRepository",
+                                "Documents uploaded successfully, initial state set to UNVERIFIED."
+                            )
+                        }
+                        fetchUploadStatus { status ->
+                            onSuccess(status)
+                        }
+                    } else {
+                        Log.e("DocumentRepository", "Upload failed: ${response.message()}")
+                        onFailure("Upload failed: ${response.message()}")
                     }
-                    fetchUploadStatus { status ->
-                        onSuccess(status)
-                    }
-                } else {
-                    Log.e("DocumentRepository", "Upload failed: ${response.message()}")
-                    onFailure("Upload failed: ${response.message()}")
                 }
-            }
 
-            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                Log.e("DocumentRepository", "Upload failed with exception: ${t.message}")
-                onFailure("Upload failed: ${t.message}")
-            }
-        })
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                    Log.e("DocumentRepository", "Upload failed with exception: ${t.message}")
+                    onFailure("Upload failed: ${t.message}")
+                }
+            })
     }
 
     // Fetch verification status and update user state with retry on 403 Forbidden
@@ -79,7 +86,10 @@ class DocumentRepository(
 
     private fun retryFetchUploadStatus(onResult: (String) -> Unit, retryCount: Int) {
         apiService.fetchUploadStatus().enqueue(object : Callback<UploadStatusResponse> {
-            override fun onResponse(call: Call<UploadStatusResponse>, response: Response<UploadStatusResponse>) {
+            override fun onResponse(
+                call: Call<UploadStatusResponse>,
+                response: Response<UploadStatusResponse>
+            ) {
                 if (response.isSuccessful) {
                     val status = response.body()?.payload ?: "UNVERIFIED"
                     coroutineScope.launch {
@@ -87,7 +97,10 @@ class DocumentRepository(
                     }
                     onResult(status)
                 } else if (response.code() == 403 && retryCount > 0) {
-                    Log.d("DocumentRepository", "403 Forbidden. Retrying in 2s... ($retryCount retries left)")
+                    Log.d(
+                        "DocumentRepository",
+                        "403 Forbidden. Retrying in 2s... ($retryCount retries left)"
+                    )
                     coroutineScope.launch {
                         delay(2000)
                         retryFetchUploadStatus(onResult, retryCount - 1)
@@ -100,7 +113,10 @@ class DocumentRepository(
 
             override fun onFailure(call: Call<UploadStatusResponse>, t: Throwable) {
                 if (retryCount > 0) {
-                    Log.d("DocumentRepository", "Network failure. Retrying in 2s... ($retryCount retries left)")
+                    Log.d(
+                        "DocumentRepository",
+                        "Network failure. Retrying in 2s... ($retryCount retries left)"
+                    )
                     coroutineScope.launch {
                         delay(2000)
                         retryFetchUploadStatus(onResult, retryCount - 1)
@@ -145,7 +161,8 @@ class DocumentRepository(
     }
 
     private fun getMediaTypeFromUri(uri: Uri): String {
-        val extension = uri.lastPathSegment?.substringAfterLast('.', "")?.toLowerCase(Locale.getDefault())
+        val extension =
+            uri.lastPathSegment?.substringAfterLast('.', "")?.lowercase(Locale.getDefault())
         return when (extension) {
             "jpg", "jpeg" -> "image/jpeg"
             "png" -> "image/png"
@@ -154,7 +171,10 @@ class DocumentRepository(
         }
     }
 
-    private fun getFileNameFromUri(contentResolver: android.content.ContentResolver, uri: Uri): String {
+    private fun getFileNameFromUri(
+        contentResolver: android.content.ContentResolver,
+        uri: Uri
+    ): String {
         var name = "unknown"
         val cursor = contentResolver.query(uri, null, null, null, null)
         cursor?.use {

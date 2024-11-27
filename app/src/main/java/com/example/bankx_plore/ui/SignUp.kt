@@ -5,7 +5,6 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.ScrollableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -66,10 +65,10 @@ fun isValidName(name: String): Boolean {
     return valid
 }
 
-fun isValidEmail(email: String): Boolean{
+fun isValidEmail(email: String): Boolean {
     val emailPattern = "[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+"
     val valid = email.matches(emailPattern.toRegex())
-    Log.d("Validation","Email validation for '$email' : $valid")
+    Log.d("Validation", "Email validation for '$email' : $valid")
     return valid
 }
 
@@ -80,7 +79,8 @@ fun isValidPhoneNumber(phoneNo: String): Boolean {
 }
 
 fun isValidPassword(password: String): Boolean {
-    val passwordPattern = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&#])[A-Za-z\\d@\$!%*?&#]{8,}\$"
+    val passwordPattern =
+        "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@\$!%*?&#])[A-Za-z\\d@\$!%*?&#]{8,}\$"
     val valid = password.matches(passwordPattern.toRegex())
     Log.d("Validation", "Password validation: $valid")
     return valid
@@ -111,7 +111,8 @@ fun SignUpScreen(
     var phoneNoError by remember { mutableStateOf<String?>(null) }
     var passwordError by remember { mutableStateOf<String?>(null) }
     var confirmPasswordError by remember { mutableStateOf<String?>(null) }
-    var emailError by remember { mutableStateOf<String?>(null)
+    var emailError by remember {
+        mutableStateOf<String?>(null)
     }
 
     val context = LocalContext.current
@@ -147,7 +148,8 @@ fun SignUpScreen(
                 value = firstName,
                 onValueChange = {
                     firstName = it
-                    firstNameError = if (!isValidName(it)) "Name must contain only letters" else null
+                    firstNameError =
+                        if (!isValidName(it)) "Name must contain only letters" else null
                 },
                 label = { Text("First name") },
                 modifier = Modifier
@@ -164,7 +166,8 @@ fun SignUpScreen(
                 value = middleName,
                 onValueChange = {
                     middleName = it
-                    middleNameError = if (!isValidName(it)) "Name must contain only letters" else null
+                    middleNameError =
+                        if (!isValidName(it)) "Name must contain only letters" else null
                 },
                 label = { Text("Middle name") },
                 modifier = Modifier
@@ -198,8 +201,8 @@ fun SignUpScreen(
                 value = email,
                 onValueChange = {
                     email = it
-                    emailError = if(!isValidEmail(it)) "Enter a valid Email Adress" else null
-                                },
+                    emailError = if (!isValidEmail(it)) "Enter a valid Email Adress" else null
+                },
                 label = { Text("Email") },
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
@@ -215,7 +218,8 @@ fun SignUpScreen(
                 value = phoneNo,
                 onValueChange = {
                     phoneNo = it
-                    phoneNoError = if (!isValidPhoneNumber(it)) "Enter a valid phone number" else null
+                    phoneNoError =
+                        if (!isValidPhoneNumber(it)) "Enter a valid phone number" else null
                 },
                 label = { Text("Phone no") },
                 modifier = Modifier
@@ -237,16 +241,16 @@ fun SignUpScreen(
                     } else null
                 },
                 label = { Text("Password") },
-                visualTransformation = if(passwordVisible)
+                visualTransformation = if (passwordVisible)
                     VisualTransformation.None else
-                PasswordVisualTransformation(),
+                    PasswordVisualTransformation(),
                 trailingIcon = {
                     val image = if (passwordVisible)
                         Icons.Filled.Visibility
                     else Icons.Filled.VisibilityOff
 
-                    IconButton(onClick = {passwordVisible = !passwordVisible}){
-                        Icon(imageVector  = image, contentDescription = "Show password")
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(imageVector = image, contentDescription = "Show password")
                     }
                 },
                 modifier = Modifier
@@ -268,14 +272,14 @@ fun SignUpScreen(
                 label = { Text("Confirm password") },
                 visualTransformation = if (passwordVisible)
                     VisualTransformation.None else
-                PasswordVisualTransformation(),
+                    PasswordVisualTransformation(),
                 trailingIcon = {
                     val image = if (passwordVisible)
                         Icons.Filled.Visibility
                     else Icons.Filled.VisibilityOff
 
-                    IconButton(onClick = {passwordVisible = !passwordVisible}){
-                        Icon(imageVector  = image, contentDescription = "Show password")
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(imageVector = image, contentDescription = "Show password")
                     }
                 },
                 modifier = Modifier
@@ -297,7 +301,10 @@ fun SignUpScreen(
                     .clickable { isChecked = !isChecked }
             ) {
                 Checkbox(checked = isChecked, onCheckedChange = { isChecked = it })
-                Text("By creating your account you agree to our Terms and Conditions.", fontSize = 10.sp)
+                Text(
+                    "By creating your account you agree to our Terms and Conditions.",
+                    fontSize = 10.sp
+                )
             }
 
             Spacer(modifier = Modifier.height(12.dp))
@@ -336,7 +343,8 @@ fun SignUpScreen(
                                 }
                             )
                         } else {
-                            signUpError = "Please ensure all fields are valid and terms are accepted."
+                            signUpError =
+                                "Please ensure all fields are valid and terms are accepted."
                             Log.e("SignUpScreen", "Sign Up validation failed")
                         }
                     },
@@ -367,7 +375,6 @@ fun SignUpScreen(
 }
 
 
-
 fun signUpUser(
     context: Context,
     firstName: String,
@@ -378,8 +385,7 @@ fun signUpUser(
     password: String,
     onSignUpSuccess: (String) -> Unit,
     onSignUpError: (String) -> Unit
-)
- {
+) {
     val dataStoreManager = DataStoreManager(context) // Use the passed context
 
     val request = SignUpRequest(
@@ -403,7 +409,10 @@ fun signUpUser(
                     val userName = payload.name ?: "User"
                     val userId = payload.id?.toInt() ?: -1
                     if (userId != -1) {
-                        Log.d("SignUpScreen", "User ID: $userId and Phone: $phoneNo saved in SQLite.")
+                        Log.d(
+                            "SignUpScreen",
+                            "User ID: $userId and Phone: $phoneNo saved in SQLite."
+                        )
                     }
 
                     // Save the user ID in DataStore (inside a coroutine)
