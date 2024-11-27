@@ -19,7 +19,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-
 // Extension function to initialize DataStore
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "user_preferences")
 
@@ -39,7 +38,6 @@ class DataStoreManager(private val context: Context) : TokenProvider {
         private val USER_ID_KEY = intPreferencesKey("user_id")
         private val USER_NAME_KEY = stringPreferencesKey("user_name")
     }
-
 
     // Mutex for thread safety during state changes
     private val mutex = Mutex()
@@ -93,10 +91,10 @@ class DataStoreManager(private val context: Context) : TokenProvider {
                 }
             }
         }
+
     suspend fun getCurrentUserState(): UserState {
         return userState.firstOrNull() ?: UserState.EMPTY
     }
-
 
 
     // Save documents uploaded status
@@ -122,9 +120,11 @@ class DataStoreManager(private val context: Context) : TokenProvider {
             Log.e("DataStoreManager", "Error saving PIN: ${e.message}")
         }
     }
+
     val userId: Flow<Int> = context.dataStore.data.map { preferences ->
         preferences[intPreferencesKey("user_id")] ?: 0
     }
+
     // Retrieve user PIN
     fun getUserPin(userId: Int): Flow<String?> {
         val pinKey = stringPreferencesKey("user_pin_$userId")
@@ -132,6 +132,7 @@ class DataStoreManager(private val context: Context) : TokenProvider {
             preferences[pinKey]
         }
     }
+
     // Save current user ID
     suspend fun saveCurrentUserId(userId: Int) {
         Log.d("DataStoreManager", "Saving user ID: $userId")
@@ -140,7 +141,7 @@ class DataStoreManager(private val context: Context) : TokenProvider {
         }
     }
 
-     fun getFlowableCurrentUserId(): Flow<Int> {
+    fun getFlowableCurrentUserId(): Flow<Int> {
         return context.dataStore.data
             .catch { exception ->
                 // Handle exceptions

@@ -23,5 +23,3 @@ data class TransactionDetails(
     @SerializedName("transaction_fee") val transactionFee: Double,
     @SerializedName("reference_note") val referenceNote: String
 )
-
-

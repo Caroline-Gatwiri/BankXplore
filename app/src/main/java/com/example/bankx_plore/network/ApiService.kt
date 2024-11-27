@@ -15,7 +15,6 @@ import retrofit2.http.Part
 import retrofit2.http.Query
 import retrofit2.http.Url
 
-
 data class LoginRequest(
     val email: String,
     val password: String
@@ -27,8 +26,6 @@ data class LoginResponse(
     val payload: Payload?
 )
 
-
-
 interface ApiService {
     @POST("/kyc/auth/login")
     fun login(
@@ -39,6 +36,7 @@ interface ApiService {
     fun signUp(
         @Body signUpRequest: SignUpRequest
     ): Call<SignUpResponse>
+
     @Multipart
     @POST("/kyc/api/files/upload")
     fun uploadDocuments(
@@ -50,7 +48,8 @@ interface ApiService {
     fun fetchUploadStatus(): Call<UploadStatusResponse>
 
     @POST("/kyc/link")
-    fun linkAccount(@Body request: LinkAccountRequest
+    fun linkAccount(
+        @Body request: LinkAccountRequest
     ): Call<LinkAccountResponse>
 
     // Fetch linked accounts for the current user
@@ -65,7 +64,8 @@ interface ApiService {
     @POST("/transactions/initiate")
     fun initiateTransaction(
         @HeaderMap headers: Map<String, String>,
-        @Body transactionRequest: TransactionRequest): Call<TransactionResponse>
+        @Body transactionRequest: TransactionRequest
+    ): Call<TransactionResponse>
 
     @POST("/transactions/check-pin")
     suspend fun checkPin(
@@ -79,9 +79,7 @@ interface ApiService {
         @HeaderMap headers: Map<String, String>,
         @Body pinRequest: PinRequest
     ): Call<Void>
-
 }
-
 
 data class PinRequest(
     val userId: Int,

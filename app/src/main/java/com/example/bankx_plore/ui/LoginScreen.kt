@@ -71,7 +71,7 @@ fun LoginScreen(
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
-    var passwordVisible by remember {mutableStateOf(false)}
+    var passwordVisible by remember { mutableStateOf(false) }
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -103,16 +103,16 @@ fun LoginScreen(
                 value = password,
                 onValueChange = { password = it },
                 label = { Text(text = "Password") },
-                visualTransformation = if(passwordVisible)
+                visualTransformation = if (passwordVisible)
                     VisualTransformation.None else
-                PasswordVisualTransformation(),
+                    PasswordVisualTransformation(),
                 trailingIcon = {
                     val image = if (passwordVisible)
                         Icons.Filled.Visibility
                     else Icons.Filled.VisibilityOff
 
-                    IconButton(onClick = {passwordVisible = !passwordVisible}){
-                        Icon(imageVector  = image, contentDescription = "Show password")
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(imageVector = image, contentDescription = "Show password")
                     }
                 },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -156,7 +156,9 @@ fun LoginScreen(
                             context = context
                         )
                     },
-                    modifier = Modifier.fillMaxWidth(0.8f).height(50.dp),
+                    modifier = Modifier
+                        .fillMaxWidth(0.8f)
+                        .height(50.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color(0xFF052A71),
                         contentColor = Color.White
@@ -251,14 +253,6 @@ fun handleLoginSuccess(
         }
     )
 }
-
-
-
-
-
-
-
-
 
 
 @Preview(showBackground = true)

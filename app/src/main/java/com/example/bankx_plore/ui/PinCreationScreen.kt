@@ -1,7 +1,6 @@
 package com.example.bankx_plore.ui
 
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -32,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import com.example.bankx_plore.datastore.DataStoreManager
 import com.example.bankx_plore.network.PinRequest
 import com.example.bankx_plore.network.RetrofitInstance
-import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Response
@@ -112,7 +110,8 @@ fun PinCreationScreen(
                 } else if (pin.length != 6) {
                     errorMessage = "PIN must be exactly 6 digits."
                 } else if (isSequential(pin)) {
-                    errorMessage = "PIN cannot be sequential (e.g., 123456). Please choose a stronger PIN."
+                    errorMessage =
+                        "PIN cannot be sequential (e.g., 123456). Please choose a stronger PIN."
                 } else {
                     errorMessage = null
                     coroutineScope.launch {
@@ -127,7 +126,7 @@ fun PinCreationScreen(
 //                                    onPinCreated(pin)
                                     onBackToDashboard()
 
-                                    Log.e("GOOD", "NAVIGATE" )
+                                    Log.e("GOOD", "NAVIGATE")
                                 }, onError = {
                                     errorMessage = it
                                 })
@@ -164,7 +163,7 @@ fun savePinToBackend(
     onError: (String) -> Unit
 ) {
     val pinRequest = PinRequest(userId, pin)
-    val headers = mapOf("Authorization" to "Bearer $token" )
+    val headers = mapOf("Authorization" to "Bearer $token")
 
     RetrofitInstance.api.savePin(headers, pinRequest).enqueue(object : retrofit2.Callback<Void> {
         override fun onResponse(call: Call<Void>, response: Response<Void>) {
@@ -180,7 +179,6 @@ fun savePinToBackend(
         }
     })
 }
-
 
 
 @Preview(showBackground = true)
