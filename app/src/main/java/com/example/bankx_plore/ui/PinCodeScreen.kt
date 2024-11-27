@@ -107,12 +107,11 @@ fun PinCodeScreen(
                 onClick = {
                     isLoading = true
                     if (pinCode.length == maxPinLength) {
-                        onPinEntered(pinCode) { success, message -> // Pass a lambda to handle the result
+                        onPinEntered(pinCode) { success, message ->
                             isLoading = false
                             if (success) {
-                                showSuccessDialog = true
                                 transactionMessage = message
-                                onBackClick() // Assuming onBackClick navigates back to dashboard
+                                showSuccessDialog = true
                             } else {
                                 showFailureDialog = true
                                 transactionMessage = message
@@ -134,9 +133,19 @@ fun PinCodeScreen(
             }
             // Success Dialog
             if (showSuccessDialog) {
-                SuccessDialog(
-                    message = transactionMessage,
-                    onDismiss = { showSuccessDialog = false })
+                AlertDialog(
+                    onDismissRequest = { showSuccessDialog = false },
+                    title = { Text("Success") },
+                    text = { Text(transactionMessage) },
+                    confirmButton = {
+                        Button(onClick = {
+                            showSuccessDialog = false
+                            onBackClick()
+                        }) {
+                            Text("OK")
+                        }
+                    }
+                )
             }
 
             // Failure Dialog
