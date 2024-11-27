@@ -52,3 +52,4 @@ Thumbs.db
 # Ignore Gradle directories and files
 .gradle/
 build/
+local.properties
