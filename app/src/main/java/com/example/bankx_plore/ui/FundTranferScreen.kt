@@ -91,7 +91,7 @@ fun FundTransferScreen(
                 onFailure = { error -> Log.e("FundTransferScreen", "Failed to fetch accounts: $error") }
             )
 
-            val savedPin = dataStoreManager.getUserPin(userId).firstOrNull()
+        //    val savedPin = dataStoreManager.getUserPin(userId).firstOrNull()
 //            if (savedPin.isNullOrEmpty()) {
 //                navigateToPinCodeScreen { verifiedPin -> pin = verifiedPin }
 //            } else {
@@ -164,6 +164,7 @@ fun FundTransferScreen(
                 options = accounts.map{it.bankName},
                 selectedOption = selectedBank,
                 onOptionSelected = {selectedBank = it}
+
             )
             Spacer(modifier = Modifier.height(16.dp))
             // To Account Input
@@ -304,35 +305,36 @@ fun getBankCode(accountNumber: String, accounts: List<Account>): String {
         else -> throw IllegalArgumentException("Unsupported bank code: $bankId")
     }
 }
+
+
 fun getBankCodeFromBankName(bankName: String): String {
     val bankCodes = mapOf(
-        "KCB" to "KCB",
+        "KCB BANK" to "KCB",
         "FAMILY" to "Family",
         "ABSA BANK" to "ABSA"
-        // Add more bank names and codes as needed
     )
     return bankCodes[bankName]
         ?: throw IllegalArgumentException("Invalid bank code for bank name: $bankName")
 }
 
-fun handleTransaction(
-    token: String,
-    context: Context,
-    transactionRequest: TransactionRequest,
-    accountRepository: AccountRepository
-) {
-    accountRepository.initiateTransaction(
-        token,
-        transactionRequest,
-        onSuccess = { response ->
-            val message = response.message ?: "No message available"
-            Toast.makeText(context, "Transaction Successful: $message", Toast.LENGTH_LONG).show()
-        },
-        onFailure = { error ->
-            Toast.makeText(context, "Transaction Failed: $error", Toast.LENGTH_LONG).show()
-        }
-    )
-}
+//fun handleTransaction(
+//    token: String,
+//    context: Context,
+//    transactionRequest: TransactionRequest,
+//    accountRepository: AccountRepository
+//) {
+//    accountRepository.initiateTransaction(
+//        token,
+//        transactionRequest,
+//        onSuccess = { response ->
+//            val message = response.message ?: "No message available"
+//            Toast.makeText(context, "Transaction Successful: $message", Toast.LENGTH_LONG).show()
+//        },
+//        onFailure = { error ->
+//            Toast.makeText(context, "Transaction Failed: $error", Toast.LENGTH_LONG).show()
+//        }
+//    )
+//}
 
 
 

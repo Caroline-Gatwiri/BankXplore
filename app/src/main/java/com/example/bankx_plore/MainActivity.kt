@@ -89,7 +89,7 @@ class MainActivity : ComponentActivity() {
 
         // Schedule the DocumentStatusWorker to check document verification status periodically
         val documentStatusWorkRequest = PeriodicWorkRequestBuilder<DocumentStatusWorker>(
-            15, TimeUnit.MINUTES
+            1, TimeUnit.MINUTES
         ).build()
 
         WorkManager.getInstance(this).enqueueUniquePeriodicWork(
