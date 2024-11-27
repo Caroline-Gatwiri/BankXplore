@@ -30,10 +30,10 @@ class MainViewModel(
             try {
                 // Fetch the document upload status and return the result using the callback onResult
                 documentRepository.fetchUploadStatus { status ->
-                    onResult(status)  // Correctly return status to the callback
+                    onResult(status)
                 }
             } catch (e: Exception) {
-                onResult("ERROR")  // Handle error by returning "ERROR" as string
+                onResult("ERROR")
             }
         }
     }
@@ -63,7 +63,6 @@ class MainViewModel(
 
     // Handle status changes after fetching the upload status
     fun handleStatusChange(status: String) {
-        // Launch a coroutine to update the user state in DataStore
         viewModelScope.launch {
             when (status) {
                 "ACTIVATED" -> {

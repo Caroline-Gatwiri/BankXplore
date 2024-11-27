@@ -74,6 +74,7 @@ class MainActivity : ComponentActivity() {
             applicationContext
         )
 
+
         // Initialize AccountRepository
         accountRepository = AccountRepository(
             RetrofitInstance.create(dataStoreManager)
@@ -211,7 +212,7 @@ class MainActivity : ComponentActivity() {
                                     showDashboardScreen = true
                                     isUserLoggedIn = true
                                 },
-                                accountRepository = accountRepository // Pass the account repository instance
+                                accountRepository = accountRepository
                             )
                         }
 
@@ -220,7 +221,7 @@ class MainActivity : ComponentActivity() {
                                 onSignUp = { firstName, middleName, lastName, email, phoneNo, password, onSuccess, onError ->
 
                                     signUpUser(
-                                        context, // Pass the context explicitly
+                                        context,
                                         firstName, middleName, lastName, email, phoneNo, password,
                                         onSignUpSuccess = { token ->
                                             lifecycleScope.launch {

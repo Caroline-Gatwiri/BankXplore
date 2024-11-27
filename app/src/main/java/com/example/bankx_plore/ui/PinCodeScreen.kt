@@ -1,5 +1,6 @@
 package com.example.bankx_plore.ui
 
+import androidx.activity.result.launch
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,18 +36,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 
 @Composable
 fun PinCodeScreen(
     onBackClick: () -> Unit,
-    onPinEntered: (String) -> Unit // Callback to return the entered PIN
+    onPinEntered: (String, (Boolean, String) -> Unit) -> Unit
 ) {
     var pinCode by remember { mutableStateOf("") }
     val maxPinLength = 6
     var isErrorDialogVisible by remember { mutableStateOf(false) }
     val errorMessage = remember { mutableStateOf("") }
     var isLoading by remember { mutableStateOf(false) }
-
+    var showSuccessDialog by remember { mutableStateOf(false) }
+    var showFailureDialog by remember { mutableStateOf(false) }
+    var transactionMessage by remember { mutableStateOf("") }
 
     Column(
         modifier = Modifier
@@ -98,24 +103,51 @@ fun PinCodeScreen(
             CircularProgressIndicator()
         } else {
             // Confirm Button
-        Button(
-            onClick = {
-                isLoading = true
-                if (pinCode.length == maxPinLength) {
-                    onPinEntered(pinCode) // Pass the entered PIN back to FundTransferScreen
-                } else {
-                    isErrorDialogVisible = true
-                    errorMessage.value = "PIN must be exactly $maxPinLength digits."
-                }
-            },
-            modifier = Modifier.fillMaxWidth(),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF052A71),
-                contentColor = Color.White
-            )
-        ) {
-            Text("Confirm")
-        }}
+            Button(
+                onClick = {
+                    isLoading = true
+                    if (pinCode.length == maxPinLength) {
+                        onPinEntered(pinCode) { success, message -> // Pass a lambda to handle the result
+                            isLoading = false
+                            if (success) {
+                                showSuccessDialog = true
+                                transactionMessage = message
+                                onBackClick() // Assuming onBackClick navigates back to dashboard
+                            } else {
+                                showFailureDialog = true
+                                transactionMessage = message
+                            }
+                        }
+                    } else {
+                        isErrorDialogVisible = true
+                        errorMessage.value = "PIN must be exactly $maxPinLength digits."
+                        isLoading = false
+                    }
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF052A71),
+                    contentColor = Color.White
+                )
+            ) {
+                Text("Confirm")
+            }
+            // Success Dialog
+            if (showSuccessDialog) {
+                SuccessDialog(
+                    message = transactionMessage,
+                    onDismiss = { showSuccessDialog = false })
+            }
+
+            // Failure Dialog
+            if (showFailureDialog) {
+                FailureDialog(
+                    message = transactionMessage,
+                    onDismiss = { showFailureDialog = false },
+                    onRetry = { /* Handle retry logic */ }
+                )
+            }
+        }
     }
 
     // Error Dialog
@@ -145,11 +177,44 @@ fun ErrorDialog(message: String, onDismiss: () -> Unit) {
     )
 }
 
-@Preview(showBackground = true)
 @Composable
-fun PinCodeScreenPreview() {
-    PinCodeScreen(
-        onBackClick = {},
-        onPinEntered = {}
+fun SuccessDialog(message: String, onDismiss: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Success") },
+        text = { Text(message) },
+        confirmButton = {
+            Button(onClick = onDismiss) {
+                Text("OK")
+            }
+        }
     )
 }
+
+
+@Composable
+fun FailureDialog(message: String, onDismiss: () -> Unit, onRetry: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Failure") },
+        text = { Text(message) },
+        confirmButton = {
+            Button(onClick = onRetry) {
+                Text("Retry")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
+}
+//@Preview(showBackground = true)
+//@Composable
+//fun PinCodeScreenPreview() {
+//    PinCodeScreen(
+//        onBackClick = {},
+//        onPinEntered = {}
+//    )
+//}

@@ -19,9 +19,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
@@ -75,6 +76,7 @@ fun DocumentUploadScreen(
     val dataStoreManager = remember { DataStoreManager(context) }
     val apiService = RetrofitInstance.create(dataStoreManager)
     val documentRepository = DocumentRepository(apiService, dataStoreManager, context)
+    var isLoading by remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
 
@@ -100,7 +102,7 @@ fun DocumentUploadScreen(
             ) {
                 IconButton(onClick = { navigateBackToDashboard() }) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back to Dashboard"
                     )
                 }
@@ -123,29 +125,32 @@ fun DocumentUploadScreen(
             // ID Document Upload Box
             UploadBox(
                 label = if (idFileUri != null) "ID Selected" else "Click to Upload ID",
-                onClick = { idFilePickerLauncher.launch(arrayOf("image/*")) }  // Filter for image files
+                onClick = { idFilePickerLauncher.launch(arrayOf("image/*")) }
             )
 
             // KRA Document Upload Box
             UploadBox(
                 label = if (kraFileUri != null) "KRA Pin Selected" else "Click to Upload KRA Pin",
-                onClick = { kraFilePickerLauncher.launch(arrayOf("image/*")) }  // Filter for image files
+                onClick = { kraFilePickerLauncher.launch(arrayOf("image/*")) }
             )
 
             // Submit Button
             Button(
                 onClick = {
                     if (idFileUri != null && kraFileUri != null) {
+                        isLoading = true
                         scope.launch {
                             documentRepository.uploadDocuments(
                                 idFileUri = idFileUri!!,
                                 kraFileUri = kraFileUri!!,
                                 onSuccess = {
+                                    isLoading = false
                                     onDocumentsUploaded(true)
                                     Toast.makeText(context, "Upload successful", Toast.LENGTH_SHORT).show()
                                     navigateBackToDashboard()
                                 },
                                 onFailure = { errorMessage ->
+                                    isLoading = false
                                     Toast.makeText(context, "Upload failed: $errorMessage", Toast.LENGTH_SHORT).show()
                                 }
                             )
@@ -158,9 +163,19 @@ fun DocumentUploadScreen(
                     .fillMaxWidth()
                     .height(50.dp),
                 shape = RoundedCornerShape(24.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF052A71), contentColor = Color.White)
-            ) {
-                Text("SUBMIT")
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color(0xFF052A71),
+                    contentColor = Color.White)
+            )
+            {
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        color = Color.White
+                    )
+                } else {
+                    // Show text when not loading
+                    Text("SUBMIT")
+                }
             }
         }
     }

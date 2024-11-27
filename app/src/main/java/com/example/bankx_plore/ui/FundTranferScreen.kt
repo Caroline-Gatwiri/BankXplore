@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeGesturesPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -71,6 +73,10 @@ fun FundTransferScreen(
     var accounts by remember { mutableStateOf<List<Account>>(emptyList()) }
     var pin by remember { mutableStateOf("") }
     var userId by remember { mutableStateOf(-1) }
+    val bankMap = mapOf("KCB" to 1, "FAMILY" to 2, "ABSA" to 3)
+    var selectedBankId by remember { mutableStateOf(0) }
+    var expanded by remember { mutableStateOf(false) }
+    var selectedBank by remember { mutableStateOf("Select Account") }
 
     LaunchedEffect(Unit) {
         coroutineScope.launch {
@@ -135,6 +141,31 @@ fun FundTransferScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false },
+                modifier = Modifier
+                    .fillMaxWidth(0.9f)
+                    .offset(y = 8.dp)
+            ) {
+                bankMap.forEach { (bankName, bankId) ->
+                    DropdownMenuItem(
+                        text = { Text(bankName) },
+                        onClick = {
+                            selectedBank = bankName
+                            selectedBankId = bankId
+                            expanded = false
+                        }
+                    )
+                }
+            }
+            DropdownInput(
+                label = "Select Account",
+                options = accounts.map{it.bankName},
+                selectedOption = selectedBank,
+                onOptionSelected = {selectedBank = it}
+            )
+            Spacer(modifier = Modifier.height(16.dp))
             // To Account Input
             OutlinedTextField(
                 value = selectedToAccount,
@@ -151,7 +182,8 @@ fun FundTransferScreen(
                 onValueChange = { transferAmount = it },
                 label = { Text("Enter Amount") },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -160,8 +192,9 @@ fun FundTransferScreen(
             OutlinedTextField(
                 value = transactionNote,
                 onValueChange = { transactionNote = it },
-                label = { Text("Enter a note (Optional)") },
+                label = { Text("Enter a note (Reason for payment)") },
                 modifier = Modifier.fillMaxWidth()
+
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -194,7 +227,6 @@ fun FundTransferScreen(
                         selectedToAccount.isNotEmpty() &&
                         transferAmount.toDoubleOrNull() != null
                     ) {
-                        // Navigate to PinCodeScreen for PIN verification
 
                             val transactionType = determineTransactionType(transferAmount.toDouble())
                             val transactionRequest = TransactionRequest(
@@ -209,7 +241,7 @@ fun FundTransferScreen(
                                     receiverAccountNumber = selectedToAccount,
                                     receiverPhoneNo = "0987654321",
 //                                    receiverBankCode = getBankCode(selectedToAccount, accounts),
-                                    receiverBankCode = "KCB",
+                                    receiverBankCode = selectedBank,
                                     amount = transferAmount.toDouble(),
                                     currency = "KES",
                                     transactionFee = transactionFee,
@@ -251,12 +283,13 @@ fun calculateTransactionFee(amount: Double?): Double {
     if (amount == null || amount <= 0.0) return 0.0
 
     return when {
-        amount <= 1000 -> 15.0 // Flat fee for transfers <= 1000
-        amount <= 5000 -> 30.0 // Fee for transfers between 1001-5000
-        amount <= 10000 -> 50.0 // Fee for transfers between 5001-10000
-        amount <= 20000 -> 75.0 // Fee for transfers between 10001-20000
-        amount <= 70000 -> 100.0 // Fee for transfers between 20001-70000
-        else -> amount * 0.02 // Percentage fee for transfers above 70000
+        amount <= 100 -> 0.0
+        amount <= 1000 -> 15.0
+        amount <= 5000 -> 30.0
+        amount <= 10000 -> 50.0
+        amount <= 20000 -> 75.0
+        amount <= 70000 -> 100.0
+        else -> amount * 0.02
     }
 }
 

@@ -33,21 +33,21 @@ interface ApiService {
     @POST("/kyc/auth/login")
     fun login(
         @Body loginRequest: LoginRequest
-    ): Call<LoginResponse>  // Call object wrapping the LoginResponse
+    ): Call<LoginResponse>
 
     @POST("/kyc/auth/register")
     fun signUp(
         @Body signUpRequest: SignUpRequest
-    ): Call<SignUpResponse>  // Call object wrapping the SignUpResponse
+    ): Call<SignUpResponse>
     @Multipart
     @POST("/kyc/api/files/upload")
     fun uploadDocuments(
         @Part id: MultipartBody.Part, // Part for ID
         @Part kra: MultipartBody.Part  // Part for KRA Pin
-    ): Call<ResponseBody> // Call object wrapping the response body
+    ): Call<ResponseBody>
 
     @GET("/kyc/upload/status")
-    fun fetchUploadStatus(): Call<UploadStatusResponse> // Define the response type
+    fun fetchUploadStatus(): Call<UploadStatusResponse>
 
     @POST("/kyc/link")
     fun linkAccount(@Body request: LinkAccountRequest
@@ -69,8 +69,8 @@ interface ApiService {
 
     @POST("/transactions/check-pin")
     suspend fun checkPin(
-        @HeaderMap headers: Map<String, String>, // Headers for authorization
-        @Query("user_id") userId: Int // Pass user_id as a query parameter
+        @HeaderMap headers: Map<String, String>,
+        @Query("user_id") userId: Int
     ): Response<Boolean>
 
 
