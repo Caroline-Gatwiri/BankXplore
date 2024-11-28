@@ -88,10 +88,15 @@ fun FundTransferScreen(
 
             accountRepository?.getLinkedAccounts(
                 onSuccess = { fetchedAccounts -> accounts = fetchedAccounts },
-                onFailure = { error -> Log.e("FundTransferScreen", "Failed to fetch accounts: $error") }
+                onFailure = { error ->
+                    Log.e(
+                        "FundTransferScreen",
+                        "Failed to fetch accounts: $error"
+                    )
+                }
             )
 
-        //    val savedPin = dataStoreManager.getUserPin(userId).firstOrNull()
+            //    val savedPin = dataStoreManager.getUserPin(userId).firstOrNull()
 //            if (savedPin.isNullOrEmpty()) {
 //                navigateToPinCodeScreen { verifiedPin -> pin = verifiedPin }
 //            } else {
@@ -159,13 +164,20 @@ fun FundTransferScreen(
                     )
                 }
             }
+//            DropdownInput(
+//                label = "Select Account",
+//                options = accounts.map { it.bankName },
+//                selectedOption = selectedBank,
+//                onOptionSelected = { selectedBank = it }
+//
+//            )
             DropdownInput(
-                label = "Select Account",
-                options = accounts.map{it.bankName},
+                label = "Select Receiver Bank",
+                options = listOf("KCB BANK", "FAMILY", "ABSA BANK"),
                 selectedOption = selectedBank,
-                onOptionSelected = {selectedBank = it}
-
+                onOptionSelected = { selectedBank = it }
             )
+
             Spacer(modifier = Modifier.height(16.dp))
             // To Account Input
             OutlinedTextField(
@@ -193,7 +205,7 @@ fun FundTransferScreen(
             OutlinedTextField(
                 value = transactionNote,
                 onValueChange = { transactionNote = it },
-                label = { Text("Enter a note (Reason for payment)") },
+                label = { Text("Reason For Making Transfer") },
                 modifier = Modifier.fillMaxWidth()
 
             )
@@ -216,7 +228,11 @@ fun FundTransferScreen(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Total Deduction", fontSize = 16.sp, fontWeight = FontWeight.Bold)
-                Text("KES ${"%.2f".format(totalDeduction)}", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                Text(
+                    "KES ${"%.2f".format(totalDeduction)}",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold
+                )
             }
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -229,33 +245,37 @@ fun FundTransferScreen(
                         transferAmount.toDoubleOrNull() != null
                     ) {
                         val bankCode = getBankCodeFromBankName(selectedBank)
-                            val transactionType = determineTransactionType(transferAmount.toDouble())
-                            val transactionRequest = TransactionRequest(
-                                pin = pin,
-                                transactionDetails = TransactionDetails(
-                                    userId = userId,
-                                    transactionId = "TX${System.currentTimeMillis()}",
-                                    transactionType = transactionType,
-                                    senderPhoneNo = "1234567890",
-                                    senderAccountNumber = selectedFromAccount,
-                                    senderBankCode = getBankCode(selectedFromAccount, accounts),
-                                    receiverAccountNumber = selectedToAccount,
-                                    receiverPhoneNo = "0987654321",
-                                    //receiverBankCode = getBankCode( selectedBank, accounts),
-                                   receiverBankCode = bankCode,
-                                    amount = transferAmount.toDouble(),
-                                    currency = "KES",
-                                    transactionFee = transactionFee,
-                                    referenceNote = transactionNote
-                                )
+                        val transactionType = determineTransactionType(transferAmount.toDouble())
+                        val transactionRequest = TransactionRequest(
+                            pin = pin,
+                            transactionDetails = TransactionDetails(
+                                userId = userId,
+                                transactionId = "TX${System.currentTimeMillis()}",
+                                transactionType = transactionType,
+                                senderPhoneNo = "1234567890",
+                                senderAccountNumber = selectedFromAccount,
+                                senderBankCode = getBankCode(selectedFromAccount, accounts),
+                                receiverAccountNumber = selectedToAccount,
+                                receiverPhoneNo = "0987654321",
+                                //receiverBankCode = getBankCode( selectedBank, accounts),
+                                receiverBankCode = bankCode,
+                                amount = transferAmount.toDouble(),
+                                currency = "KES",
+                                transactionFee = transactionFee,
+                                referenceNote = transactionNote
                             )
-                            // Initiate the transaction
+                        )
+                        // Initiate the transaction
 //                            handleTransaction(context, transactionRequest, accountRepository!!)
 
                         navigateToPinCodeScreen(transactionRequest)
 
                     } else {
-                        Toast.makeText(context, "Please fill all required fields.", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            "Please fill all required fields.",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
@@ -268,14 +288,6 @@ fun FundTransferScreen(
 }
 
 
-
-
-
-
-
-
-
-
 fun determineTransactionType(amount: Double?): String {
     return if (amount != null && amount <= 500000) "RTGS" else "EFT"
 }
@@ -285,11 +297,18 @@ fun calculateTransactionFee(amount: Double?): Double {
 
     return when {
         amount <= 100 -> 0.0
-        amount <= 1000 -> 15.0
-        amount <= 5000 -> 30.0
-        amount <= 10000 -> 50.0
-        amount <= 20000 -> 75.0
-        amount <= 70000 -> 100.0
+        amount <= 500 -> 6.0
+        amount <= 1000 -> 12.0
+        amount <= 1500 -> 22.0
+        amount <= 2500 -> 32.0
+        amount <= 3500 -> 51.0
+        amount <= 5000 -> 55.0
+        amount <= 7500 -> 75.0
+        amount <= 10000 -> 87.0
+        amount <= 15000 -> 97.0
+        amount <= 20000 -> 102.0
+        amount <= 35000 -> 105.0
+        amount <= 50000 -> 105.0
         else -> amount * 0.02
     }
 }
@@ -316,26 +335,6 @@ fun getBankCodeFromBankName(bankName: String): String {
     return bankCodes[bankName]
         ?: throw IllegalArgumentException("Invalid bank code for bank name: $bankName")
 }
-
-//fun handleTransaction(
-//    token: String,
-//    context: Context,
-//    transactionRequest: TransactionRequest,
-//    accountRepository: AccountRepository
-//) {
-//    accountRepository.initiateTransaction(
-//        token,
-//        transactionRequest,
-//        onSuccess = { response ->
-//            val message = response.message ?: "No message available"
-//            Toast.makeText(context, "Transaction Successful: $message", Toast.LENGTH_LONG).show()
-//        },
-//        onFailure = { error ->
-//            Toast.makeText(context, "Transaction Failed: $error", Toast.LENGTH_LONG).show()
-//        }
-//    )
-//}
-
 
 
 

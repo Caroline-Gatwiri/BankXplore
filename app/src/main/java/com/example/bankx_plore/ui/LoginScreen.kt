@@ -57,7 +57,7 @@ import retrofit2.Response
 
 @Composable
 fun LoginScreen(
-    onLoginSuccess: (String, String, Int) -> Unit, // Updated to include token, name, and user ID
+    onLoginSuccess: (String, String, Int) -> Unit,
     onSignUpClick: () -> Unit,
     navigateToPinCreation: () -> Unit,
     navigateToDashboard: () -> Unit,
@@ -68,7 +68,6 @@ fun LoginScreen(
     var loginError by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
 
-    val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
 
     var passwordVisible by remember {mutableStateOf(false)}

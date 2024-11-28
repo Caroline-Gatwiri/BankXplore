@@ -12,6 +12,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -60,7 +61,6 @@ class MainActivity : ComponentActivity() {
 
     private var linkAccountScreenOrigin: String =
         "dashboard"
-    private var onPinCodeVerifiedCallback: ((String) -> Unit)? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -116,7 +116,6 @@ class MainActivity : ComponentActivity() {
                 var showPinCreationScreen by remember { mutableStateOf(false) }
 
                 var showPinCodeScreen by remember { mutableStateOf(false) }
-                var pendingTransactionRequest by remember { mutableStateOf<TransactionRequest?>(null) }
 
 
                 var pinRecentlyCreated by remember { mutableStateOf(false) }
@@ -126,7 +125,7 @@ class MainActivity : ComponentActivity() {
                 var isUserLoggedIn by remember { mutableStateOf(false) }
 
                 // Document upload states
-                var selectedItem by remember { mutableStateOf(0) }
+                var selectedItem by remember { mutableIntStateOf(0) }
                 var documentsUploaded by remember { mutableStateOf(false) }
 
                 // States for dialog visibility
@@ -206,7 +205,7 @@ class MainActivity : ComponentActivity() {
                                     lifecycleScope.launch {
                                         dataStoreManager.saveUserToken(token)
                                         dataStoreManager.saveUserName(name)
-                                        dataStoreManager.saveCurrentUserId(userId.toInt())
+                                        dataStoreManager.saveCurrentUserId(userId)
                                     }
                                     userToken = token
                                     isUserLoggedIn = true
@@ -581,10 +580,10 @@ class MainActivity : ComponentActivity() {
                                                 onSuccess = {
                                                     lifecycleScope.launch {
                                                         dataStoreManager.saveUserPin(
-                                                            userId.toInt(),
+                                                            userId,
                                                             pin
                                                         ) // Save locally
-                                                        pinRecentlyCreated = true // Set this flag
+                                                        pinRecentlyCreated = true
                                                         Toast.makeText(
                                                             this@MainActivity,
                                                             "PIN created successfully!",

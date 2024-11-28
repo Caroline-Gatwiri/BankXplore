@@ -185,14 +185,15 @@ fun TransactionItem(transaction: Transaction) {
         Column(
             modifier = Modifier.weight(1f)
         ) {
-            Text(text = transaction.referenceNote, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Text(text = "Transaction Details", fontWeight = FontWeight.Bold)
+            Text(text = transaction.referenceNote, fontWeight = FontWeight.SemiBold, fontSize = 16.sp)
             Text(
-                text = "Sender: ${transaction.senderPhoneNo}",
+                text = "Sender: ${transaction.senderId}",
                 fontSize = 14.sp,
                 color = Color.Gray
             )
             Text(
-                text = "Receiver: ${transaction.receiverPhoneNo}",
+                text = "Receiver: ${transaction.receiverId}",
                 fontSize = 14.sp,
                 color = Color.Gray
             )
