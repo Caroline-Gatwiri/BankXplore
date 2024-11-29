@@ -9,18 +9,18 @@ import java.util.concurrent.TimeUnit
 object RetrofitInstance {
     private const val BASE_URL = "http://34.28.208.64:8080"
 
-    // Create a logging interceptor
+
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
         level = HttpLoggingInterceptor.Level.BODY
     }
 
-    // Retrofit instance for requests that don't need authentication (e.g., login)
+    // Retrofit instance for requests that don't need authentication
     val api: ApiService by lazy {
         val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)  // Set connection timeout
-            .readTimeout(10, TimeUnit.SECONDS)     // Set read timeout
-            .writeTimeout(10, TimeUnit.SECONDS)    // Set write timeout
-            .addInterceptor(loggingInterceptor)    // Add the logging interceptor to OkHttpClient
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .addInterceptor(loggingInterceptor)
             .build()
 
         Retrofit.Builder()
@@ -34,11 +34,11 @@ object RetrofitInstance {
     // Retrofit instance for requests that need authentication (using token)
     fun create(tokenProvider: TokenProvider): ApiService {
         val client = OkHttpClient.Builder()
-            .connectTimeout(10, TimeUnit.SECONDS)  // Set connection timeout
-            .readTimeout(10, TimeUnit.SECONDS)     // Set read timeout
-            .writeTimeout(10, TimeUnit.SECONDS)    // Set write timeout
-            .addInterceptor(AuthInterceptor(tokenProvider))  // Add the AuthInterceptor
-            .addInterceptor(loggingInterceptor)  // Add the logging interceptor to OkHttpClient
+            .connectTimeout(10, TimeUnit.SECONDS)
+            .readTimeout(10, TimeUnit.SECONDS)
+            .writeTimeout(10, TimeUnit.SECONDS)
+            .addInterceptor(AuthInterceptor(tokenProvider))
+            .addInterceptor(loggingInterceptor)
             .build()
 
         return Retrofit.Builder()

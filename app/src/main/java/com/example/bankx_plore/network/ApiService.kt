@@ -42,8 +42,8 @@ interface ApiService {
     @Multipart
     @POST("/kyc/api/files/upload")
     fun uploadDocuments(
-        @Part id: MultipartBody.Part, // Part for ID
-        @Part kra: MultipartBody.Part  // Part for KRA Pin
+        @Part id: MultipartBody.Part,
+        @Part kra: MultipartBody.Part
     ): Call<ResponseBody>
 
     @GET("/kyc/upload/status")
@@ -53,13 +53,13 @@ interface ApiService {
     fun linkAccount(@Body request: LinkAccountRequest
     ): Call<LinkAccountResponse>
 
-    // Fetch linked accounts for the current user
+
     @GET("kyc/users/accounts")
     fun getLinkedAccounts(): Call<LinkedAccountsResponse>
 
     @GET
     fun getAccountBalance(
-        @Url route: String // The dynamic URL for account balance fetching.
+        @Url route: String
     ): Call<AccountRepository.BalanceResponse>
 
     @POST("/transactions/initiate")

@@ -95,13 +95,7 @@ fun FundTransferScreen(
                     )
                 }
             )
-
-            //    val savedPin = dataStoreManager.getUserPin(userId).firstOrNull()
-//            if (savedPin.isNullOrEmpty()) {
-//                navigateToPinCodeScreen { verifiedPin -> pin = verifiedPin }
-//            } else {
-//                pin = savedPin
-//            }
+            
         }
     }
 
@@ -257,7 +251,6 @@ fun FundTransferScreen(
                                 senderBankCode = getBankCode(selectedFromAccount, accounts),
                                 receiverAccountNumber = selectedToAccount,
                                 receiverPhoneNo = "0987654321",
-                                //receiverBankCode = getBankCode( selectedBank, accounts),
                                 receiverBankCode = bankCode,
                                 amount = transferAmount.toDouble(),
                                 currency = "KES",
@@ -265,8 +258,6 @@ fun FundTransferScreen(
                                 referenceNote = transactionNote
                             )
                         )
-                        // Initiate the transaction
-//                            handleTransaction(context, transactionRequest, accountRepository!!)
 
                         navigateToPinCodeScreen(transactionRequest)
 

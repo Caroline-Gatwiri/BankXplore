@@ -124,7 +124,7 @@ fun PinCreationScreen(
 
                                 // Save PIN to backend
                                 savePinToBackend(userId, pin, token, onSuccess = {
-//                                    onPinCreated(pin)
+
                                     onBackToDashboard()
 
                                     Log.e("GOOD", "NAVIGATE" )
